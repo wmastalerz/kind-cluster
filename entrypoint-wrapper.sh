@@ -6,7 +6,7 @@ set -o pipefail
 
 reg_name=registry
 reg_port=8282
-reg_ip=$(ip a |grep -A +3 docker0 |grep inet |awk '{split($2,a,"/"); print a[1]}')
+reg_ip=$(ip a |grep -A +3 eth0 |grep inet |awk '{split($2,a,"/"); print a[1]}' |awk '{split($1,a,"."); print a[1]"."a[2]"."a[3]".1"}' )
 
 echo "Setting up KIND cluster"
 
@@ -57,12 +57,6 @@ kubectl config set-context --current --namespace csdb
 # add registry ip to dns
 echo "${reg_ip} registry" > customdomains.db
 kubectl get cm coredns -n kube-system -o jsonpath='{.data.*}' > Corefile
-kubectl create cm coredns --from-file Corefile --form-file customdomains.db -o yaml --dry-run | kubectl apply -n kube-system -f -
-
-# create ansible dependences
-mkdir $HOME/.venv
-virtualenv -p $(which python3) $(HOME)/.venv/mdbm-dev
-source $(HOME)/.venv/mdbm-dev/bin/activate
-cd /test/mdbm-dev-mdbm-dev-env && pip install -r requirements.txt |true
+#kubectl create cm coredns --from-file Corefile --form-file customdomains.db -o yaml --dry-run | kubectl apply -n kube-system -f -
 
 exec "$@"

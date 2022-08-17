@@ -1,0 +1,5 @@
+ansible-core==2.11.12
+ansible==4.10.0
+docker==4.4.4
+jsonpatch==1.32
+openshift==0.13.1
