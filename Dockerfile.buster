@@ -16,11 +16,16 @@ RUN apt-get update && \
       kmod \
       procps && \
     curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
-    echo "deb [arch=amd64] https://download.docker.com/linux/debian buster stable" | tee /etc/apt/sources.list.d/docker.list && \
-    apt-get update && \
+    echo "deb [arch=amd64] https://download.docker.com/linux/debian buster stable" | tee /etc/apt/sources.list.d/docker.list 
+
+RUN apt-get update && \
     apt-get install --no-install-recommends -y docker-ce && \
     apt-get autoclean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* 
+
+RUN apt-get update && \
+    apt-get install -y openssh-server python-requests python3-docker python3-pip && \
+    pip3 install virtualenv
 
 # Switch to use iptables instead of nftables (to match the CI hosts)
 # TODO use some kind of runtime auto-detection instead if/when
