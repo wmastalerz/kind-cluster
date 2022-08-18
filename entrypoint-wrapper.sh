@@ -51,12 +51,15 @@ data:
 EOF
 
 # create currnet ns
-kubectl create ns csdb
-kubectl config set-context --current --namespace csdb
+kubectl create ns test
+kubectl config set-context --current --namespace test
 
-# add registry ip to dns
-echo "${reg_ip} registry" > customdomains.db
+# add ip of registry into dns
 kubectl get cm coredns -n kube-system -o jsonpath='{.data.*}' > Corefile
-#kubectl create cm coredns --from-file Corefile --form-file customdomains.db -o yaml --dry-run | kubectl apply -n kube-system -f -
+echo "${reg_ip} registry" > customdomains.db
+kubectl create configmap coredns --from-file Corefile,customdomains.db -o yaml --dry-run | kubectl apply -n kube-system -f -
+
+# set default python3
+update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 
 exec "$@"
