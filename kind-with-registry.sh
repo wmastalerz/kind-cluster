@@ -10,6 +10,7 @@ if [ "$(docker inspect -f '{{.State.Running}}' "${reg_name}" 2>/dev/null || true
     registry:2
 fi
 
+ip=${1:-"127.0.0.1"}
 # create a cluster with the local registry enabled in containerd
 cat <<EOF | kind create cluster --config=-
 kind: Cluster
@@ -21,7 +22,7 @@ containerdConfigPatches:
 networking:
   # WARNING: It is _strongly_ recommended that you keep this the default
   # (127.0.0.1) for security reasons. However it is possible to change this.
-  apiServerAddress: "192.168.1.26"
+  apiServerAddress: ${ip}
   # By default the API server listens on a random open port.
   # You may choose a specific port but probably don't need to in most cases.
   # Using a random port makes it easier to spin up multiple clusters.
