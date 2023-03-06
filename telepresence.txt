@@ -1,0 +1,55 @@
+
+############## CENTOS 7 redhat 7 ###############
+#######1. install epel repo
+yum -y install epel-release
+#or
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo yum install epel-release-latest-7.noarch.rpm
+#or
+#subscription-manager repos --enable codeready-builder-for-rhel-8-$(arch)-rpms
+#dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+subscription-manager repos --enable rhel-*-optional-rpms \
+                           --enable rhel-*-extras-rpms \
+                           --enable rhel-ha-for-rhel-*-server-rpms
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+   yum repolist
+   yum install htop
+
+###################### telepresence ##############################
+#git clone https://github.com/datawire/telepresence.git && cd telepresence
+
+yum update -y
+# install python3.6
+yum install python3
+
+# install system dependencies
+yum install -y git  sshfs conntrack #?torsocks
+sudo curl -fL https://app.getambassador.io/download/tel2/linux/amd64/latest/telepresence -o /usr/local/bin/telepresence
+sudo chmod a+x /usr/local/bin/telepresence
+echo "Telepresence `telepresence --version` installed!"
+
+########### helm
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+
+########### kubectl
+sudo curl -fL "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o  /usr/local/bin/kubectl
+sudo chmod 777 /usr/local/bin/kubectl
+
+########### ./.kube/config
+## accessable IP on kind as k8s API
+# scp -P <port> -3rp ~/.kube/config <user>@<host>:/home/<user>/.kube/
+scp -P 2222 -3rp ~/.kube/config oracle@localhost:/home/oracle/.kube/
+
+############### ubuntu 20 	##################
+
+
+
+
+############## windows 10 #########################
+
+
+												
+
