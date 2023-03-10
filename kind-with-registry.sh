@@ -10,7 +10,8 @@ if [ "$(docker inspect -f '{{.State.Running}}' "${reg_name}" 2>/dev/null || true
     registry:2
 fi
 
-ip=${1:-"127.0.0.1"}
+#ip=${1:-"127.0.0.1"}
+ip=$(ip r g 8.8.8.8 |awk '{split($7,a,"/"); print a[1]}' |head -n +1)
 # create a cluster with the local registry enabled in containerd
 cat <<EOF | kind create cluster --config=-
 kind: Cluster
