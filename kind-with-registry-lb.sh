@@ -1,9 +1,11 @@
 #!/bin/sh
 set -o errexit
 
+clu_name='kind'
 # create registry container unless it already exists
 reg_name='registry'
 reg_port='8282'
+
 if [ "$(docker inspect -f '{{.State.Running}}' "${reg_name}" 2>/dev/null || true)" != 'true' ]; then
   docker run \
     -d --restart=always -p "127.0.0.1:${reg_port}:5000" --name "${reg_name}" \
@@ -53,16 +55,4 @@ data:
 EOF
 
 # Apply metallb
-kubectl apply -f metallb-native.yaml
-kubectl wait --namespace metallb-system \
-                --for=condition=ready pod \
-                --selector=app=metallb \
-                --timeout=90s
-
-ippool=$(docker network inspect -f '{{.IPAM.Config}}' kind)
-ipprefix="${ippool:2:9}"
-echo $ipprefix
-metalb=$(cat metallb-config.yaml)
-echo "${metalb//172.19.255./$ipprefix}"
-sleep 10
-echo "${metalb//172.19.255./$ipprefix}" | kubectl apply -f -
+kind-loadbalancer.sh
