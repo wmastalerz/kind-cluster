@@ -55,4 +55,4 @@ data:
 EOF
 
 # Apply metallb
-kind-loadbalancer.sh
+./kind-loadbalancer.sh
