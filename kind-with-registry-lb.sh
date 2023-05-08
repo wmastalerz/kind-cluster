@@ -56,3 +56,6 @@ EOF
 
 # Apply metallb
 ./kind-loadbalancer.sh
+ippool=$(docker network inspect -f '{{.IPAM.Config}}' kind)
+ipprefix="${ippool:2:9}"
+printf '\360\237\246\204' && echo " its your happy day, PLS find kind with external IP pool $ipprefix.x"
