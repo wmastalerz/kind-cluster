@@ -36,10 +36,9 @@ if [ "$(docker inspect -f '{{.State.Running}}' "${reg_name}" 2>/dev/null || true
     registry:2
 fi
 
-#ip=${1:-"127.0.0.1"}
-ip=$(ip r g 8.8.8.8 |awk '{split($7,a,"/"); print a[1]}' |head -n +1)
+ip=${1:-"127.0.0.1"}
 # create a cluster with the local registry enabled in containerd
-cat <<EOF | kind create cluster --config=-
+cat <<EOF | kind create cluster --wait 2m --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 containerdConfigPatches:
@@ -58,6 +57,20 @@ nodes:
 - role: control-plane
 - role: worker
 EOF
+
+attempt=1
+while [ "$attempt" -le 30 ]; do
+  if kubectl get nodes >/dev/null 2>&1; then
+    break
+  fi
+  sleep 2
+  attempt=$((attempt + 1))
+done
+
+kubectl get nodes >/dev/null 2>&1 || {
+  echo "Kubernetes API server did not become ready in time" >&2
+  exit 1
+}
 
 # connect the registry to the cluster network if not already connected
 if [ "$(docker inspect -f='{{json .NetworkSettings.Networks.kind}}' "${reg_name}")" = 'null' ]; then
